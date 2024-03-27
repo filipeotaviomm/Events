@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Event;
+use App\Models\User;
 
 class EventController extends Controller
 {
@@ -57,6 +58,9 @@ class EventController extends Controller
             $event->image = $imageName;
         }
 
+        $user = auth()->user();
+        $event->user_id = $user->id;
+
         $event->save();
 
         return redirect('/')->with('msg', 'Evento criado com sucesso!');
@@ -67,6 +71,58 @@ class EventController extends Controller
 
         $event = Event::findOrFail($id);
 
-        return view('events.show', ['event' => $event]);
+        $eventOwner = User::where('id', $event->user_id)->first()->toArray(); //não precisaria colocar esse ->toArray(), mas é bom pra praticar, aí na hora de chamar não vai ser com seta, vai ser com ['nome']
+
+        return view('events.show', ['event' => $event, 'eventOwner' => $eventOwner]);
+    }
+
+    public function dashboard()
+    {
+
+        $user = auth()->user();
+
+        $events = $user->events;
+
+        return view('events.dashboard', ['events' => $events]);
+    }
+
+    public function destroy($id)
+    {
+
+        Event::findOrFail($id)->delete();
+
+        return redirect('/dashboard')->with('msg', 'Evento excluído com sucesso!');
+    }
+
+    public function edit($id)
+    {
+
+        $event = Event::findOrFail($id);
+
+        return view('events.edit', ['event' => $event]);
+    }
+
+    public function update(Request $request)
+    {
+
+        $data = $request->all();
+
+        // Image Upload
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+            $requestImage = $request->image;
+
+            $extension = $requestImage->extension();
+
+            $imageName = md5($requestImage->getClientOriginalName() . strtotime("now")) . "." . $extension;
+
+            $requestImage->move(public_path('img/events'), $imageName);
+
+            $data['image'] = $imageName;
+        }
+
+        Event::findOrFail($request->id)->update($data);
+
+        return redirect('/dashboard')->with('msg', 'Evento editado com sucesso!');
     }
 }
