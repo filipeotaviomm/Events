@@ -20,7 +20,7 @@
     </div>
     <div class="form-group">
       <label for="date">Data do evento:</label>
-      <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d', strtotime($event->date));}}">
+      <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d', strtotime($event->date))}}">
     </div>
     <div class="form-group">
       <label for="title">Cidade:</label>
@@ -30,7 +30,7 @@
       <label for="title">O evento é privado?</label>
       <select name="private" id="private" class="form-control">
         <option value="0">Não</option>
-        <option value="1" {{ $event->private == 1 ? "selected='selected'" : "" }}>Sim</option>
+        <option value="1" {{ $event->private == 1 ? 'selected' : '' }}>Sim</option>
       </select>
     </div>
     <div class="form-group">
@@ -39,21 +39,14 @@
     </div>
     <div class="form-group">
       <label for="title">Adicione itens de infraestrutura:</label>
+      @foreach(
+      ['Cadeiras', 'Palco', 'Cerveja grátis', 'Open food', 'Brindes'] as $item
+      )
       <div class="form-group">
-        <input type="checkbox" name="items[]" value="Cadeiras"> Cadeiras
+        {{-- o método in_array() verifica se $item está presente em $event->items --}}
+        <input type="checkbox" name="items[]" {{ in_array($item, $event->items) ? 'checked' : '' }} value="{{ $item }}"> {{ $item }}
       </div>
-      <div class="form-group">
-        <input type="checkbox" name="items[]" value="Palco"> Palco
-      </div>
-      <div class="form-group">
-        <input type="checkbox" name="items[]" value="Cerveja grátis"> Cerveja grátis
-      </div>
-      <div class="form-group">
-        <input type="checkbox" name="items[]" value="Open Food"> Open food
-      </div>
-      <div class="form-group">
-        <input type="checkbox" name="items[]" value="Brindes"> Brindes
-      </div>
+      @endforeach
     </div>
     <input type="submit" class="btn btn-primary" value="Editar Evento">
   </form>

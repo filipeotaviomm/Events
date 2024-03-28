@@ -125,4 +125,19 @@ class EventController extends Controller
 
         return redirect('/dashboard')->with('msg', 'Evento editado com sucesso!');
     }
+
+    public function joinEvent($id)
+    {
+
+        $user = auth()->user();
+        $event = Event::findOrFail($id);
+
+        if ($user->eventsAsParticipant->contains($event)) {
+            return redirect("/event/{$id}")->with('msg', 'Você já está cadastro(a) nesse evento');
+        } else {
+            //attach() é um método da relação muitos para muitos que já faz a ligação do usuário com o evento automaticamente
+            $user->eventsAsParticipant()->attach($id); //esse erro não interfere em nada
+            return redirect('/dashboard')->with('msg', 'Sua presença está confirmada no evento ' . $event->title);
+        }
+    }
 }

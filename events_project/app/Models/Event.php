@@ -20,9 +20,15 @@ class Event extends Model
     //tem que ter isso para poder atualizar, o campo que eu colocar dentro do array ele não poderá ser atualizado
     protected $guarded = [];
 
-    //relacionamento com user
+    //relacionamento 1 user para vários events
     public function user()
     {
         return $this->BelongsTo('App\Models\User');
+    }
+
+    //relacionamento vários users para vários events
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\User');
     }
 }

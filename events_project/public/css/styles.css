@@ -168,6 +168,12 @@ header {
     display: flex;
 }
 
+#info-container div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
 #info-container h3,
 #description-container h3 {
     font-size: 20px;
@@ -194,7 +200,7 @@ header {
 }
 
 #description-container {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 /* Dashboard */
@@ -204,7 +210,7 @@ header {
 }
 
 .dashboard-events-container th {
-    width: 25%;
+    width: 20%;
 }
 
 .dashboard-events-container form {

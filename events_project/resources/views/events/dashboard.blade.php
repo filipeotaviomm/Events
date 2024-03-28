@@ -14,19 +14,21 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Nome</th>
-                <th scope="col">Participantes</th>
+                <th scope="col">Data</th>
+                <th scope="col">Participante(s)</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             @foreach($events as $index => $event) {{-- esse $index ñ está sendo usado, mas poderia ser --}}
             <tr>
-                <td scropt="row">{{ $loop->index + 1 }}</td>
-                <td>
+                <td scope="row">{{ $loop->index + 1 }}</td>
+                <td scope="row">
                     <a href="/event/{{ $event->id }}">{{ $event->title }}</a>
                 </td>
-                <td>0</td>
-                <td>
+                <td scope="row">{{ date('d/m/Y', strtotime($event->date)) }}</td>
+                <td scope="row">{{ count($event->users) }}</td>
+                <td scope="row">
                     <a href="/event/edit/{{ $event->id }}" class="btn btn-info edit-btn">
                         <ion-icon name="create-outline"></ion-icon> Editar
                     </a>
