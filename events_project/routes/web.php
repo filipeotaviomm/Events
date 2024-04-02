@@ -13,6 +13,7 @@ Route::delete('/event/{id}', [EventController::class, 'destroy'])->middleware('a
 Route::get('/event/edit/{id}', [EventController::class, 'edit'])->middleware('auth');
 Route::put('/event/update/{id}', [EventController::class, 'update'])->middleware('auth');
 Route::post('/event/join/{id}', [EventController::class, 'joinEvent'])->middleware('auth');
+Route::delete('/event/leave/{id}', [EventController::class, 'leaveEvent'])->middleware('auth');
 
 Route::get('/contact', function () {
     return view('contact');

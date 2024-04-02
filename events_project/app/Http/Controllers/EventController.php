@@ -47,13 +47,11 @@ class EventController extends Controller
         // Image Upload
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
-            $requestImage = $request->image;
+            $extension = $request->image->extension();
 
-            $extension = $requestImage->extension();
+            $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
 
-            $imageName = md5($requestImage->getClientOriginalName() . strtotime("now")) . "." . $extension;
-
-            $requestImage->move(public_path('img/events'), $imageName);
+            $request->image->move(public_path('img/events'), $imageName);
 
             $event->image = $imageName;
         }
@@ -71,10 +69,25 @@ class EventController extends Controller
 
         $event = Event::findOrFail($id);
 
+        $user = auth()->user();
+        $hasUserJoined = false;
+
+        if ($user) {
+
+            $userEvents = $user->eventsAsParticipant->toArray();
+
+            foreach ($userEvents as $userEvent) {
+                if ($userEvent['id'] == $id) {
+                    $hasUserJoined = true;
+                }
+            }
+        }
+
         $eventOwner = User::where('id', $event->user_id)->first()->toArray(); //não precisaria colocar esse ->toArray(), mas é bom pra praticar, aí na hora de chamar não vai ser com seta, vai ser com ['nome']
 
-        return view('events.show', ['event' => $event, 'eventOwner' => $eventOwner]);
+        return view('events.show', ['event' => $event, 'eventOwner' => $eventOwner, 'hasUserJoined' => $hasUserJoined]);
     }
+
 
     public function dashboard()
     {
@@ -83,7 +96,12 @@ class EventController extends Controller
 
         $events = $user->events;
 
-        return view('events.dashboard', ['events' => $events]);
+        $eventsAsParticipant = $user->eventsAsParticipant;
+
+        return view(
+            'events.dashboard',
+            ['events' => $events, 'eventsAsParticipant' => $eventsAsParticipant]
+        );
     }
 
     public function destroy($id)
@@ -96,8 +114,12 @@ class EventController extends Controller
 
     public function edit($id)
     {
-
+        $user = auth()->user();
         $event = Event::findOrFail($id);
+
+        if ($user->id != $event->user_id) {
+            return redirect('/dashboard');
+        }
 
         return view('events.edit', ['event' => $event]);
     }
@@ -110,13 +132,11 @@ class EventController extends Controller
         // Image Upload
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
-            $requestImage = $request->image;
+            $extension = $request->image->extension();
 
-            $extension = $requestImage->extension();
+            $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
 
-            $imageName = md5($requestImage->getClientOriginalName() . strtotime("now")) . "." . $extension;
-
-            $requestImage->move(public_path('img/events'), $imageName);
+            $request->image->move(public_path('img/events'), $imageName);
 
             $data['image'] = $imageName;
         }
@@ -130,14 +150,25 @@ class EventController extends Controller
     {
 
         $user = auth()->user();
+
+        $user->eventsAsParticipant()->attach($id);
+
         $event = Event::findOrFail($id);
 
-        if ($user->eventsAsParticipant->contains($event)) {
-            return redirect("/event/{$id}")->with('msg', 'Você já está cadastro(a) nesse evento');
-        } else {
-            //attach() é um método da relação muitos para muitos que já faz a ligação do usuário com o evento automaticamente
-            $user->eventsAsParticipant()->attach($id); //esse erro não interfere em nada
-            return redirect('/dashboard')->with('msg', 'Sua presença está confirmada no evento ' . $event->title);
-        }
+        return redirect('/dashboard')->with('msg', 'Sua presença está confirmada no evento ' . $event->title);
+    }
+
+    public function leaveEvent($id)
+    {
+
+        $user = auth()->user();
+        $user->eventsAsParticipant()->detach($id);
+
+        $event = Event::findOrFail($id);
+
+        return redirect('/dashboard')->with(
+            'msg',
+            'Você saiu do evento: ' . $event->title
+        );
     }
 }
