@@ -8,7 +8,7 @@
   <h1>Editando: {{ $event->title }}</h1>
   <form action="/event/update/{{ $event->id }}" method="POST" enctype="multipart/form-data">
     @csrf
-    @method('PUT')
+    @method('PATCH')
     <div class="form-group">
       <label for="image">Imagem do Evento:</label>
       <input type="file" id="image" name="image" class="from-control-file">

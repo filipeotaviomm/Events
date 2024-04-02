@@ -54,6 +54,8 @@ class EventController extends Controller
             $request->image->move(public_path('img/events'), $imageName);
 
             $event->image = $imageName;
+        } else {
+            $event->image = null;
         }
 
         $user = auth()->user();
@@ -139,6 +141,9 @@ class EventController extends Controller
             $request->image->move(public_path('img/events'), $imageName);
 
             $data['image'] = $imageName;
+        } else {
+            // o unset remove o campo 'image' do array de dados para vir como null
+            unset($data['image']);
         }
 
         Event::findOrFail($request->id)->update($data);

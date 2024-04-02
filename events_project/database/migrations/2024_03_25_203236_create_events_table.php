@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->dateTime('date');
             $table->string('city');
             $table->boolean('private');
+            $table->string('image')->nullable();
+            $table->json('items');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
