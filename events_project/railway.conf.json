@@ -1,5 +1,0 @@
-{
-    "web": {
-        "start": "docker-compose up -d"
-    }
-}
