@@ -15,4 +15,3 @@ Route::patch('/event/update/{id}', [EventController::class, 'update'])->middlewa
 Route::delete('/event/{id}', [EventController::class, 'destroy'])->middleware('auth');
 Route::post('/event/join/{id}', [EventController::class, 'joinEvent'])->middleware('auth');
 Route::delete('/event/leave/{id}', [EventController::class, 'leaveEvent'])->middleware('auth');
-// Route::delete('/event/leave/{id}', [EventController::class, 'leaveEvent'])->middleware('auth');
