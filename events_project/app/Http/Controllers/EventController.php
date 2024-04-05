@@ -49,7 +49,9 @@ class EventController extends Controller
 
             $extension = $request->image->extension();
 
-            $imageName = md5($request->image->getClientOriginalName() . strtotime("now")) . "." . $extension;
+            $imageName = md5(
+                $request->image->getClientOriginalName() . strtotime("now")
+            ) . "." . $extension;
 
             $request->image->move(public_path('img/events'), $imageName);
 
@@ -142,7 +144,7 @@ class EventController extends Controller
 
             $data['image'] = $imageName;
         } else {
-            // o unset remove o campo 'image' do array de dados para vir como null
+            // o unset remove o campo 'image' do array de dados para não vir como null
             unset($data['image']);
         }
 
@@ -155,12 +157,14 @@ class EventController extends Controller
     {
 
         $user = auth()->user();
-
         $user->eventsAsParticipant()->attach($id);
 
         $event = Event::findOrFail($id);
 
-        return redirect('/dashboard')->with('msg', 'Sua presença está confirmada no evento ' . $event->title);
+        return redirect('/dashboard')->with(
+            'msg',
+            'Sua presença está confirmada no evento ' . $event->title
+        );
     }
 
     public function leaveEvent($id)
